@@ -15,12 +15,11 @@ JSONdataUsersFromSession <- fromJSON(jsonFileUsersFromSession)
 
 # maak vector list met alle spelers:
 vector = c()
-vector <- c(vector, "Alle spelers")
+#vector <- c(vector, "Alle spelers")
 
 for (i in 1:length(JSONdataUsersFromSession))
   x <- paste(JSONdataUsersFromSession[[i]]$name, " (", JSONdataUsersFromSession[[i]]$id,")")
   vector <- c(vector, paste(JSONdataUsersFromSession[[i]]$name, " (", JSONdataUsersFromSession[[i]]$id,")"))
-
 
   # pagina:
   shinyUI(fluidPage(
@@ -30,6 +29,7 @@ for (i in 1:length(JSONdataUsersFromSession))
                  selectInput("dataset", "Kies een speler:",
                              choices = vector),
                  actionButton("button", "Toon stappen")),
-    mainPanel("hier moet een plot komen die stappen van de speler(s) toont. Y-as is hoogte stap, x-as tijd in seconden/minuten", textOutput("text1"))
+    mainPanel("Airtime van stappen",
+              tableOutput("table"))
   )
 ))
