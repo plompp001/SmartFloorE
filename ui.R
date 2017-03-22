@@ -1,21 +1,35 @@
 library(shiny)
 library(RJSONIO)
 
-jsonFile <- "https://tst-sport.trifork.nl/api/floors"
-JSONdata <- fromJSON(jsonFile)
+# twee sessies met user met footsteps:
+# 5891a3b92ab79c000531c42c
+# 588a04cd2ab79c000531c18e
 
-# extract the data node
-floors<-JSONdata[[2]]
+# haal sessie gegevens op:
+jsonFileSession <- "https://tst-sport.trifork.nl/api/session/588a04cd2ab79c000531c18e"
+JSONdataOfSession <- fromJSON(jsonFileSession)
+
+# haal users van de sessie op:
+jsonFileUsersFromSession <- "https://tst-sport.trifork.nl/api/session/588a04cd2ab79c000531c18e/user"
+JSONdataUsersFromSession <- fromJSON(jsonFileUsersFromSession)
+
+# maak vector list met alle spelers:
+vector = c()
+vector <- c(vector, "Alle spelers")
+
+for (i in 1:length(JSONdataUsersFromSession))
+  x <- paste(JSONdataUsersFromSession[[i]]$name, " (", JSONdataUsersFromSession[[i]]$id,")")
+  vector <- c(vector, paste(JSONdataUsersFromSession[[i]]$name, " (", JSONdataUsersFromSession[[i]]$id,")"))
 
 
-name <- (JSONdata$name)
-
-shinyUI(fluidPage(
-  titlePanel("Smartfloor E - Steps"),
+  # pagina:
+  shinyUI(fluidPage(
+  titlePanel("SmartFloor Group E"),
   sidebarLayout(
-    sidebarPanel(("sidebarPanel"),
-                 textInput("name", "Enter your name", ""),
-                 textInput("age", "Enter your age", "")),
-    mainPanel(("mainPanel"), floors)
+    sidebarPanel((paste("Vloer:", JSONdataOfSession$floor$name)),
+                 selectInput("dataset", "Kies een speler:",
+                             choices = vector),
+                 actionButton("button", "Toon stappen")),
+    mainPanel("hier moet een plot komen die stappen van de speler(s) toont. Y-as is hoogte stap, x-as tijd in seconden/minuten", textOutput("text1"))
   )
 ))
