@@ -10,6 +10,7 @@ positions <- data.frame(session$position, session$user)
 
 distance_per_player <- c()
 average_speed_per_player <- c()
+num_footsteps_per_player <- c()
 
 for(index in 1:nrow(players)) {
   # Vector of all positions within a session for a particular player.
@@ -34,6 +35,7 @@ for(index in 1:nrow(players)) {
   # Concatenating calculated values to the vectors, which are declared above.
   distance_per_player <- c(distance_per_player, distance_in_meters)
   average_speed_per_player <- c(average_speed_per_player, speed_in_kph)
+  num_footsteps_per_player <- c(num_footsteps_per_player, nrow(positions_for_player))
 }
 
 # A data frame containing all relevant data per player(i.e. average speed, distance). 
