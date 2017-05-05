@@ -36,8 +36,8 @@ for(index in 1:nrow(players)) {
   average_speed_per_player <- c(average_speed_per_player, speed_in_kph)
 }
 
-# A data frame containing all relevant data per user(i.e. average speed, distance). 
-user_data <- data.frame(players$id, distance_per_player, average_speed_per_player)
+# A data frame containing all relevant data per player(i.e. average speed, distance). 
+player_data <- data.frame(players$id, distance_per_player, average_speed_per_player)
 
 # Creation of a matrix for a floor, this is used to show a heatmap(or any sort of graph which utilizes the z-axis).
 floor <- matrix(0, max(positions$x), max(positions$y))
