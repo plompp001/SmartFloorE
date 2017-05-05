@@ -1,35 +1,46 @@
 library(shiny)
-library(RJSONIO)
+library(plotly)
 
-# twee sessies met user met footsteps:
-# 5891a3b92ab79c000531c42c
-# 588a04cd2ab79c000531c18e
-
-# haal sessie gegevens op:
-jsonFileSession <- "https://tst-sport.trifork.nl/api/session/588a04cd2ab79c000531c18e"
-JSONdataOfSession <- fromJSON(jsonFileSession)
-
-# haal users van de sessie op:
-jsonFileUsersFromSession <- "https://tst-sport.trifork.nl/api/session/588a04cd2ab79c000531c18e/user"
-JSONdataUsersFromSession <- fromJSON(jsonFileUsersFromSession)
-
-# maak vector list met alle spelers:
-vector = c()
-#vector <- c(vector, "Alle spelers")
-
-for (i in 1:length(JSONdataUsersFromSession))
-  x <- paste(JSONdataUsersFromSession[[i]]$name, " (", JSONdataUsersFromSession[[i]]$id,")")
-  vector <- c(vector, paste(JSONdataUsersFromSession[[i]]$name, " (", JSONdataUsersFromSession[[i]]$id,")"))
-
-  # pagina:
-  shinyUI(fluidPage(
-  titlePanel("SmartFloor Group E"),
+# Define UI for random distribution application 
+fluidPage(
+  
+  # Application title
+  titlePanel("Smartfloor E"),
+  
+  # Sidebar with controls to select the random distribution type
+  # and number of observations to generate. Note the use of the
+  # br() element to introduce extra vertical spacing
   sidebarLayout(
-    sidebarPanel((paste("Vloer:", JSONdataOfSession$floor$name)),
-                 selectInput("dataset", "Kies een speler:",
-                             choices = vector),
-                 actionButton("button", "Toon stappen")),
-    mainPanel("Airtime van stappen",
-              tableOutput("table"))
+    sidebarPanel(
+      selectInput("session", "Choose a Session:", players$id),
+      selectInput("player", "Choose a Player:", players$id),
+      
+      sliderInput("sessionTime", 
+                  "Session time", 
+                  value = 500,
+                  min = 0, 
+                  max = 1000)
+    ),
+    
+    # Show a tabset that includes a plot, summary, and table view
+    # of the generated distribution
+    mainPanel(
+      tabsetPanel(type = "tabs", 
+                  tabPanel("Amount of Footsteps", 
+                           plotlyOutput("amountOfFootsteps")),
+                  tabPanel("Average Speed", 
+                           plotlyOutput("averageSpeed")),
+                  tabPanel("Total Distance", 
+                           plotlyOutput("totalDistance")),
+                  tabPanel("Positions", 
+                           plotlyOutput("positions")),
+                  tabPanel("Heatmap", 
+                           plotlyOutput("heatmap")),
+                  tabPanel("Perspective", 
+                           plotOutput("perspective")),
+                  tabPanel("Table", 
+                           dataTableOutput("table"))
+      )
+    )
   )
-))
+)
