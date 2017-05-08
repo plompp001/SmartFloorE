@@ -1,6 +1,8 @@
 library(shiny)
 library(plotly)
 
+source("api.R")
+
 # Define UI for random distribution application 
 fluidPage(
   

@@ -33,7 +33,7 @@ function(input, output) {
   })
   
   output$heatmap <- renderPlotly({
-    plot_ly(x = max(positions$x) - 1.5, y = max(positions$y) - 1.5, z = field, type = "heatmap")
+    plot_ly(x = max(positions$x) - 1.5, y = max(positions$y) - 1.5, z = floor, type = "heatmap")
   })
   
   output$perspective <- renderPlot({
