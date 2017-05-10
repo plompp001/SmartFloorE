@@ -4,6 +4,7 @@ library(dplyr)
 # Distance between positions in meters, distance between two positions equals 10cm.
 distance_between_positions = 0.1
 
+sessions <- fromJSON("http://tst-sport.trifork.nl/api/floors/10/sessions")
 session <- fromJSON("http://tst-sport.trifork.nl/api/footstep/session/588f20802ab79c000531c239")
 players <- data.frame(distinct(session$user))
 positions <- data.frame(session$position, session$user)
@@ -11,7 +12,7 @@ positions <- data.frame(session$position, session$user)
 distance_per_player <- c()
 average_speed_per_player <- c()
 num_footsteps_per_player <- c()
-
+player_name = "Unknown"
 for(index in 1:nrow(players)) {
   # Vector of all positions within a session for a particular player.
   positions_for_player <- filter(positions, id == players[index, 1])
@@ -32,6 +33,10 @@ for(index in 1:nrow(players)) {
   # Average speed in kilometers per hour for a particular player. 
   speed_in_kph = (distance_in_meters / session_time) * 3.6
   
+  # Player name
+  player = fromJSON(paste0("http://tst-sport.trifork.nl/api/user/", toString(players$id)))
+  player_name = player$name
+  
   # Concatenating calculated values to the vectors, which are declared above.
   distance_per_player <- c(distance_per_player, distance_in_meters)
   average_speed_per_player <- c(average_speed_per_player, speed_in_kph)
@@ -39,8 +44,8 @@ for(index in 1:nrow(players)) {
 }
 
 # A data frame containing all relevant data per player(i.e. average speed, distance). 
-player_data <- data.frame(players$id, distance_per_player, average_speed_per_player, num_footsteps_per_player)
-
+player_data <- data.frame(players$id, player_name, distance_per_player, average_speed_per_player, num_footsteps_per_player)
+player_data
 # Creation of a matrix for a floor, this is used to show a heatmap(or any sort of graph which utilizes the z-axis).
 floor <- matrix(0, max(positions$x), max(positions$y))
 

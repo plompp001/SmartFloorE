@@ -1,48 +1,148 @@
 library(shiny)
 library(plotly)
+library(shinydashboard)
 
 source("api.R")
 
-# Define UI for random distribution application 
-fluidPage(
-  
-  # Application title
-  titlePanel("Smartfloor E"),
-  
-  # Sidebar with controls to select the random distribution type
-  # and number of observations to generate. Note the use of the
-  # br() element to introduce extra vertical spacing
-  sidebarLayout(
-    sidebarPanel(
-      selectInput("session", "Choose a Session:", players$id),
-      selectInput("player", "Choose a Player:", players$id),
-      
-      sliderInput("sessionTime", 
-                  "Session time", 
-                  value = 500,
-                  min = 0, 
-                  max = 1000)
+
+header <- dashboardHeader(title = "SMARTFLOOR E")
+
+sidebar <- dashboardSidebar(sidebarMenu(
+  menuItem("Footsteps", tabName = "tabFootsteps"),
+  menuItem("Distance", tabName = "tabDistance"),
+  menuItem("Speed", tabName = "tabSpeed"),
+  menuItem("Positions", tabName = "tabPositions"),
+  menuItem("Heatmap", tabName = "tabHeatmap"),
+  menuItem("Perspective", tabName = "tabPerspective")
+))
+
+filters <- column(
+  width = 3,
+  box(
+    width = NULL,
+    status = "warning",
+    selectInput("sessions", "Session",
+                choices = sessions$id),
+    actionButton("loadSession", "Load session"),
+    p(
+      class = "text-muted",
+      br(),
+      "Currently all the sessions are from the floor with id: 'Eindhoven Test Vloer'."
+    )
+  ),
+  box(
+    width = NULL,
+    status = "warning",
+    selectInput("player1", "Player 1",
+                choices = player_data$player_name),
+    selectInput("player2", "Player 2",
+                choices = player_data$player_name),
+    actionButton("comparePlayers", "Compare Players"),
+    p(
+      class = "text-muted",
+      br(),
+      "Note: this will compare 2 players within the selected session. It can occur that a player didn't set a footstep."
+    )
+  ),
+  box(
+    width = NULL,
+    status = "warning",
+    sliderInput(
+      "sessionTime",
+      "Session flags",
+      min = 0,
+      max = session_time,
+      value = c(0, session_time)
     ),
-    
-    # Show a tabset that includes a plot, summary, and table view
-    # of the generated distribution
-    mainPanel(
-      tabsetPanel(type = "tabs", 
-                  tabPanel("Amount of Footsteps", 
-                           plotlyOutput("amountOfFootsteps")),
-                  tabPanel("Average Speed", 
-                           plotlyOutput("averageSpeed")),
-                  tabPanel("Total Distance", 
-                           plotlyOutput("totalDistance")),
-                  tabPanel("Positions", 
-                           plotlyOutput("positions")),
-                  tabPanel("Heatmap", 
-                           plotlyOutput("heatmap")),
-                  tabPanel("Perspective", 
-                           plotOutput("perspective")),
-                  tabPanel("Table", 
-                           dataTableOutput("table"))
-      )
+    p(class = "text-muted",
+      paste("Note: time is in seconds")),
+    actionButton("setSessionTime", "Set time"),
+    br(),
+    br(),
+    sliderInput(
+      "playSession",
+      "Play session",
+      min = 0,
+      max = session_time,
+      value = 0,
+      step = 1,
+      animate = animationOptions(interval =
+                                   session_time, loop = TRUE)
     )
   )
 )
+
+body <- dashboardBody(
+  tabItems(
+    tabItem(tabName = "tabFootsteps",
+            fluidRow(column(
+              width = 9,
+              box(
+                width = NULL,
+                solidHeader = TRUE,
+                plotlyOutput("amountOfFootsteps")
+              ),
+              box(width = NULL,
+                  uiOutput("amountOfFootstepsTable"))
+            ),
+            filters)),
+    tabItem(tabName = "tabDistance",
+            fluidRow(column(
+              width = 9,
+              box(
+                width = NULL,
+                solidHeader = TRUE,
+                plotlyOutput("totalDistance")
+              ),
+              box(width = NULL,
+                  uiOutput("totalDistanceTable"))
+            ),
+            filters)),
+    tabItem(tabName = "tabSpeed",
+            fluidRow(column(
+              width = 9,
+              box(
+                width = NULL,
+                solidHeader = TRUE,
+                plotlyOutput("averageSpeed")
+              ),
+              box(width = NULL,
+                  uiOutput("averageSpeedTable"))
+            ),
+            filters)),
+    tabItem(tabName = "tabPositions",
+            fluidRow(column(
+              width = 9,
+              box(
+                width = NULL,
+                solidHeader = TRUE,
+                plotlyOutput("positions")
+              )
+            ),
+            filters)),
+    tabItem(tabName = "tabHeatmap",
+            fluidRow(column(
+              width = 9,
+              box(
+                width = NULL,
+                solidHeader = TRUE,
+                plotlyOutput("heatmap")
+              )
+            ),
+            filters)),
+    tabItem(tabName = "tabPerspective",
+            fluidRow(column(
+              width = 9,
+              box(
+                width = NULL,
+                solidHeader = TRUE,
+                plotOutput("perspective")
+              )
+            ),
+            filters))
+  )
+)
+
+dashboardPage(header,
+              sidebar,
+              body)
