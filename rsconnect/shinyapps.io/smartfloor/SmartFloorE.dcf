@@ -1,0 +1,11 @@
+name: SmartFloorE
+title: SmartFloorE
+account: smartfloor
+server: shinyapps.io
+appId: 179521
+bundleId: 822399
+url: https://smartfloor.shinyapps.io/SmartFloorE/
+when: 1494424410.10658
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .RData
