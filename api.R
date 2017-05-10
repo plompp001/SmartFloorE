@@ -1,14 +1,34 @@
 library(jsonlite)
 library(dplyr)
 
+getSessionNumber <- function(sessionFromUser=NULL) {
+  print(paste("Retrieved session from user: ", sessionFromUser))
+  if(is.null(sessionFromUser))
+  {
+    #default session
+    print("Using default session")
+    sessionUrl <- "http://tst-sport.trifork.nl/api/footstep/session/588f20802ab79c000531c239"
+  } else {
+    sessionUrl <- 
+      paste(
+        "http://tst-sport.trifork.nl/api/footstep/session/",
+        sessionFromUser,
+        sep = "")
+  }
+  #return vector with URL
+  sessionUrl
+}
+
+sessions <- fromJSON("http://tst-sport.trifork.nl/api/floors/10/sessions")
+session <- fromJSON(getSessionNumber())
+
+
 # Distance between positions in meters, distance between two positions equals 10cm.
 distance_between_positions = 0.1
 
-sessions <- fromJSON("http://tst-sport.trifork.nl/api/floors/10/sessions")
-session <- fromJSON("http://tst-sport.trifork.nl/api/footstep/session/588f20802ab79c000531c239")
 players <- data.frame(distinct(session$user))
 positions <- data.frame(session$position, session$user)
-
+print(players)
 distance_per_player <- c()
 average_speed_per_player <- c()
 num_footsteps_per_player <- c()
