@@ -21,6 +21,18 @@ filters <- column(
   box(
     width = NULL,
     status = "warning",
+    selectInput("floors", "floor",
+                choices = floors$id),
+    actionButton("loadfloor", "Load floor"),
+    p(
+      class = "text-muted",
+      br(),
+      "Select a floor"
+    )
+  ),
+  box(
+    width = NULL,
+    status = "warning",
     selectInput("sessions", "Session",
                 choices = sessions$id),
     actionButton("loadSession", "Load session"),

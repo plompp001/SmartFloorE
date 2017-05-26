@@ -1,14 +1,16 @@
 library(plotly)
 
 source("api.R")
-function(input, output) {
+
+shinyServer(function(input, output, session) {
+
   output$amountOfFootsteps <- renderPlotly({
     plot_ly(player_data,
             x = player_name,
             y = num_footsteps_per_player,
             type = "bar")
   })
-  
+
   output$amountOfFootstepsTable <- renderUI({
     tags$table(class = "table",
                tags$thead(tags$tr(
@@ -112,4 +114,48 @@ function(input, output) {
   output$table <- renderDataTable({
     player_data
   })
-}
+  
+  observeEvent(input$loadfloor, {
+    
+    filename <- paste("sessions_of_floor_", trimws(input$floors),".Rda", sep = "");
+    
+    sessions <- readRDS(file=filename);
+    
+    updateSelectInput(session, "sessions", choices =  sessions$id)
+  })
+  
+  observeEvent(input$loadSession, {
+    
+    url <- paste("http://tst-sport.trifork.nl/api/session/",
+                input$sessions,"/user", sep = "");
+    session  <- fromJSON(url);
+    
+    positions <- data.frame(session$position, session$user)
+    
+    
+    output$plots=renderUI({plotOutput("positions")})
+    output$positions <- renderPlotly({
+      plot_ly(
+        positions,
+        x = positions$x,
+        y = positions$y,
+        type = "scatter",
+        mode = 'markers'
+      )
+    })
+    
+    
+    #url <- paste("http://tst-sport.trifork.nl/api/session/",
+     #            input$sessions,"/user", sep = "");
+    #usersfrom  <- fromJSON(url);
+    
+    
+    
+    #filename <- paste("sessions_of_floor_", trimws(input$floors),".Rda", sep = "");
+    
+    #sessions <- readRDS(file=filename);
+    
+    #updateSelectInput(session, "sessions", choices =  sessions$id)
+  })
+
+})

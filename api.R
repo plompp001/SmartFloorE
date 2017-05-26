@@ -4,8 +4,61 @@ library(dplyr)
 # Distance between positions in meters, distance between two positions equals 10cm.
 distance_between_positions = 0.1
 
-sessions <- fromJSON("http://tst-sport.trifork.nl/api/floors/10/sessions")
-session <- fromJSON("http://tst-sport.trifork.nl/api/footstep/session/588f20802ab79c000531c239")
+loadFromApi <- FALSE;
+
+testpppp <- ""
+testpppppp <- ""
+sessionsVector <- c();
+usersfromsession = ""
+
+if(loadFromApi == TRUE){
+  
+  floorsFromApi <- fromJSON("http://tst-sport.trifork.nl/api/floors")
+  saveRDS(floorsFromApi, file="floors.Rda");
+  
+  floors <- readRDS(file="floors.Rda")
+  sessionsList <- c();
+  slist <- list()
+  
+  for(index in 1:nrow(floors)) {
+    
+    floorId <- floors$id[[index]];
+    
+    if(floorId != ""){
+      url <- paste("http://tst-sport.trifork.nl/api/floors/",
+                   gsub(" ", "%20", trimws(floors$id[[index]])),"/sessions", sep = "");
+      sessionsFromFloor <- fromJSON(url);
+      
+      saveRDS(sessionsFromFloor, file=paste("sessions_of_floor_",floorId, ".Rda", sep = ""));
+    }
+  }
+  url <- "http://tst-sport.trifork.nl/api/footstep/session/588f20802ab79c000531c239";
+  
+  firstsessionJson <- fromJSON(url)
+  
+  saveRDS(firstsessionJson, file="firstSession.Rda");
+  
+  
+  
+
+}
+
+
+
+floors <- readRDS(file="floors.Rda")
+floor_with_footsteps = "";
+session_with_footsteps = "";
+sessionsVector = c();
+
+sessions <- readRDS(file="sessions_of_floor_10.Rda")
+
+#firstSessionId <- sessions[[1]][[1]];
+
+#dit gebruiken, kan echter niet want veel sessies zijn leeg???????
+#url <- paste("http://tst-sport.trifork.nl/api/footstep/session/",firstSessionId, sep = "")
+
+session <- readRDS(file="firstSession.Rda");
+
 players <- data.frame(distinct(session$user))
 positions <- data.frame(session$position, session$user)
 
@@ -34,7 +87,13 @@ for(index in 1:nrow(players)) {
   speed_in_kph = (distance_in_meters / session_time) * 3.6
   
   # Player name
-  player = fromJSON(paste0("http://tst-sport.trifork.nl/api/user/", toString(players$id)))
+  if(loadFromApi == TRUE){
+    firstplayer <- fromJSON(paste0("http://tst-sport.trifork.nl/api/user/", toString(players$id)))
+    saveRDS(firstplayer, file="firstPlayer");
+    #player = fromJSON(paste0("http://tst-sport.trifork.nl/api/user/", toString(players$id)))
+  }
+  
+  player = readRDS(file="firstPlayer");
   player_name = player$name
   
   # Concatenating calculated values to the vectors, which are declared above.
