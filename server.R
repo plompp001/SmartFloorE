@@ -126,9 +126,12 @@ shinyServer(function(input, output, session) {
   
   observeEvent(input$loadSession, {
     
-    url <- paste("http://tst-sport.trifork.nl/api/session/",
-                input$sessions,"/user", sep = "");
-    session  <- fromJSON(url);
+    #url <- paste("http://tst-sport.trifork.nl/api/session/",
+    #            input$sessions,"/user", sep = "");
+    #session  <- fromJSON(url);
+    
+    m<-myFirstFun(input$sessions)
+    
     
     positions <- data.frame(session$position, session$user)
     
@@ -143,19 +146,6 @@ shinyServer(function(input, output, session) {
         mode = 'markers'
       )
     })
-    
-    
-    #url <- paste("http://tst-sport.trifork.nl/api/session/",
-     #            input$sessions,"/user", sep = "");
-    #usersfrom  <- fromJSON(url);
-    
-    
-    
-    #filename <- paste("sessions_of_floor_", trimws(input$floors),".Rda", sep = "");
-    
-    #sessions <- readRDS(file=filename);
-    
-    #updateSelectInput(session, "sessions", choices =  sessions$id)
   })
 
 })
