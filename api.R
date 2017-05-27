@@ -53,8 +53,6 @@ if (loadFromApi == TRUE) {
   
 }
 
-
-
 floors <- readRDS(file = "floors.Rda")
 floor_with_footsteps = ""
 
@@ -194,8 +192,12 @@ myFirstFun <- function(sessieId)
   }
 }
 
-sessionss <-
-  as.character(all_floors_with_sessions_with_footsteps$Session)
-firstSessionId = sessionss[[1]]
+floors <- as.character(all_floors_with_sessions_with_footsteps$Floor)
+sessionss <- as.character(all_floors_with_sessions_with_footsteps$Session)
+
+sessionsOfFirstFloor <- filter(all_floors_with_sessions_with_footsteps, Floor == floors[[1]])
+sessions <- as.character(sessionsOfFirstFloor$Session)
+
+firstSessionId = sessions[[1]]
 
 m <- myFirstFun(firstSessionId)
