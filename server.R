@@ -117,10 +117,11 @@ shinyServer(function(input, output, session) {
   
   observeEvent(input$loadfloor, {
     
-    sessionOfFloor <- filter(all_floors_with_sessions_with_footsteps, Floor == input$floors)
-    sessions <- as.character(sessionsOfFirstFloor$Session)
+    filename <- paste("sessions_of_floor_", trimws(input$floors),".Rda", sep = "");
     
-    updateSelectInput(session, "sessions", choices =  sessions)
+    sessions <- readRDS(file=filename);
+    
+    updateSelectInput(session, "sessions", choices =  sessions$id)
   })
   
   observeEvent(input$loadSession, {
@@ -130,7 +131,6 @@ shinyServer(function(input, output, session) {
     #session  <- fromJSON(url);
     
     m<-myFirstFun(input$sessions)
-    
     
     positions <- data.frame(session$position, session$user)
     
