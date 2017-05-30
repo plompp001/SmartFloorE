@@ -117,24 +117,23 @@ shinyServer(function(input, output, session) {
   
   observeEvent(input$loadfloor, {
     
+    ss = NEWsessionsDF[NEWsessionsDF$Floor == input$floors,]
+    
     filename <- paste("sessions_of_floor_", trimws(input$floors),".Rda", sep = "");
     
     sessions <- readRDS(file=filename);
     
-    updateSelectInput(session, "sessions", choices =  sessions$id)
+    updateSelectInput(session, "sessions", choices =  ss$Session)
   })
   
   observeEvent(input$loadSession, {
     
-    #url <- paste("http://tst-sport.trifork.nl/api/session/",
-    #            input$sessions,"/user", sep = "");
-    #session  <- fromJSON(url);
-    
-    m<-myFirstFun(input$sessions)
-    
+    url <- paste("http://track.smartfloor.com/api/footstep/session/",
+                input$sessions, sep = "");
+    session  <- fromJSON(url);
+
     positions <- data.frame(session$position, session$user)
-    
-    
+
     output$plots=renderUI({plotOutput("positions")})
     output$positions <- renderPlotly({
       plot_ly(
