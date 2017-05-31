@@ -3,6 +3,7 @@ library(dplyr)
 
 # Distance between positions in meters, distance between two positions equals 10cm.
 distance_between_positions = 0.1
+
 loadDataFromApi = FALSE
 
 NEWsessionsDF = data.frame(Floor = character(),
@@ -128,6 +129,7 @@ refresh <- function(sessieId) {
   nr = as.character(sessieDF$Footsteps[[1]])
   
   name = paste("session_", sessieId, "_", nr, ".Rda", sep = "")
+  #name = "session_588f20802ab79c000531c239_29.Rda"
   
   session = readRDS(file = name)
   
@@ -196,6 +198,16 @@ refresh <- function(sessieId) {
     floor[positions[index, 1], positions[index, 2]] =
       floor[floor(positions[index, 1]), round(positions[index, 2])] + 1
   }
+  
+  
+  return(list(player_data=player_data,positions=positions,floor=floor,session_time=session_time))
+  
+  
 }
 
 m <- refresh(sessieId)
+
+player_data= m$player_data
+positions = m$positions
+floor = m$floor
+session_time=m$session_time
