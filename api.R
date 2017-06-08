@@ -9,7 +9,7 @@ loadDataFromApi = FALSE
 NEWsessionsDF = data.frame(Floor = character(),
                            Session = character(),
                            Footsteps = character())
-NEWsessionsDF = readRDS(file = "NEWsessionsDF.Rda")
+NEWsessionsDF = readRDS(file = "sessions/NEWsessionsDF.Rda")
 
 if (loadDataFromApi == TRUE) {
   NEWallSessions = fromJSON("http://track.smartfloor.com/api/v2/sessions")
@@ -82,7 +82,7 @@ if (loadDataFromApi == TRUE) {
                     )
                   
                   #sla voetstappen lokaal op
-                  saveRDS(session, file = session_filename)
+                  saveRDS(session, file = paste('sessions/',session_filename))
                   
                   #gooi de sessie ook nog in een dataframe
                   NEWsessionsDF =
@@ -102,7 +102,7 @@ if (loadDataFromApi == TRUE) {
       }
     }
   }
-  saveRDS(NEWsessionsDF, file = "NEWsessionsDF.Rda")
+  saveRDS(NEWsessionsDF, file = "sessions/NEWsessionsDF.Rda")
 }
 
 all_floors_with_sessions_with_footsteps = NEWsessionsDF[NEWsessionsDF$Footsteps > 0, ]
@@ -128,7 +128,7 @@ refresh <- function(sessieId) {
   
   nr = as.character(sessieDF$Footsteps[[1]])
   
-  name = paste("session_", sessieId, "_", nr, ".Rda", sep = "")
+  name = paste("sessions/session_", sessieId, "_", nr, ".Rda", sep = "")
   #name = "session_588f20802ab79c000531c239_29.Rda"
   
   session = readRDS(file = name)
