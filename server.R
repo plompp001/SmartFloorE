@@ -119,7 +119,7 @@ shinyServer(function(input, output, session) {
     
     ss = NEWsessionsDF[NEWsessionsDF$Floor == input$floors,]
     
-    filename <- paste("sessions_of_floor_", trimws(input$floors),".Rda", sep = "");
+    filename <- paste("sessions/sessions_of_floor_", trimws(input$floors),".Rda", sep = "");
     
     sessions <- readRDS(file=filename);
     
