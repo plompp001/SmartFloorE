@@ -6,7 +6,7 @@ connectionA <- mongo(collection = "footstep_mocap", db = "smartfloor", url = "mo
 collection <- connectionA$find()
 
 findAllSessions <- function() {
-  data.frame(distinct(collectionA$session))
+  data.frame(unique(collection$session))
 }
 
 findSessionById <- function(id) {
