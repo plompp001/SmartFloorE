@@ -2,8 +2,7 @@ library(shiny)
 library(plotly)
 library(shinydashboard)
 
-source("api.R")
-
+source("repository.R")
 
 header <- dashboardHeader(title = "SMARTFLOOR E")
 
@@ -22,27 +21,7 @@ filters <- column(
     width = NULL,
     status = "warning",
     selectInput("sessions", "Session",
-                choices = sessions$id),
-    actionButton("loadSession", "Load session"),
-    p(
-      class = "text-muted",
-      br(),
-      "Currently all the sessions are from the floor with id: 'Eindhoven Test Vloer'."
-    )
-  ),
-  box(
-    width = NULL,
-    status = "warning",
-    selectInput("player1", "Player 1",
-                choices = player_data$player_name),
-    selectInput("player2", "Player 2",
-                choices = player_data$player_name),
-    actionButton("comparePlayers", "Compare Players"),
-    p(
-      class = "text-muted",
-      br(),
-      "Note: this will compare 2 players within the selected session. It can occur that a player didn't set a footstep."
-    )
+                choices = sort(findAllSessions()$X.id))
   ),
   box(
     width = NULL,
@@ -72,76 +51,65 @@ filters <- column(
   )
 )
 
-body <- dashboardBody(
+body <- dashboardBody(fluidRow(column(
+  width = 9,
   tabItems(
     tabItem(tabName = "tabFootsteps",
             fluidRow(column(
-              width = 9,
+              width = 12,
               box(
                 width = NULL,
                 solidHeader = TRUE,
                 plotlyOutput("amountOfFootsteps")
-              ),
-              box(width = NULL,
-                  uiOutput("amountOfFootstepsTable"))
-            ),
-            filters)),
+              )
+            ))),
     tabItem(tabName = "tabDistance",
             fluidRow(column(
-              width = 9,
+              width = 12,
               box(
                 width = NULL,
                 solidHeader = TRUE,
                 plotlyOutput("totalDistance")
-              ),
-              box(width = NULL,
-                  uiOutput("totalDistanceTable"))
-            ),
-            filters)),
+              )
+            ))),
     tabItem(tabName = "tabSpeed",
             fluidRow(column(
-              width = 9,
+              width = 12,
               box(
                 width = NULL,
                 solidHeader = TRUE,
                 plotlyOutput("averageSpeed")
-              ),
-              box(width = NULL,
-                  uiOutput("averageSpeedTable"))
-            ),
-            filters)),
+              )
+            ))),
     tabItem(tabName = "tabPositions",
             fluidRow(column(
-              width = 9,
+              width = 12,
               box(
                 width = NULL,
                 solidHeader = TRUE,
                 plotlyOutput("positions")
               )
-            ),
-            filters)),
+            ))),
     tabItem(tabName = "tabHeatmap",
             fluidRow(column(
-              width = 9,
+              width = 12,
               box(
                 width = NULL,
                 solidHeader = TRUE,
                 plotlyOutput("heatmap")
               )
-            ),
-            filters)),
+            ))),
     tabItem(tabName = "tabPerspective",
             fluidRow(column(
-              width = 9,
+              width = 12,
               box(
                 width = NULL,
                 solidHeader = TRUE,
                 plotOutput("perspective")
               )
-            ),
-            filters))
+            )))
   )
-)
+), filters))
 
 dashboardPage(header,
               sidebar,
