@@ -13,7 +13,7 @@ function(input, output) {
     
     session <- findSessionById(id)
     players <- findPlayers(id)
-    positions <- rbind(positions, findPositions(id))
+    positions <- findPositions(id)
     
     print(positions)
     distance_per_player <- c()
