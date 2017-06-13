@@ -6,7 +6,7 @@ connectionA <- mongo(collection = "footstep_mocap", db = "smartfloor", url = "mo
 collection <- connectionA$find()
 
 findAllSessions <- function() {
-  data.frame(unique(collection$session))
+  data.frame(distinct(collection$session))
 }
 
 findSessionById <- function(id) {
@@ -22,3 +22,27 @@ findPositions <- function(id) {
   session <- findSessionById(id)
   data.frame(session$position, session$user)
 }
+
+findStepbySessionAndTime <- function(timeId, id) {
+  data.frame(connectionA$find(paste0("{ \"time\": { \"$date\":  \"", timeId, "\"}, \"session.$id\": \"", id, "\"}")))
+}
+
+#De tijd uiteindelijk als getal van 4 cijfers weggewerkt. Dit in de toekomst nog op de een of andere manier mooi terugzetten naar een tijd voor in het filter
+findTimesForFilterLow <- function(id) {
+  timesDF <- data.frame(connectionA$find(paste0("{ \"session.$id\": \"", id, "\"}")))
+  timesDF <- sort(timesDF$time)
+  timesDF <- substr(timesDF, 15, 19)
+  timesDF <- gsub(":", "", timesDF)
+  timesDF <- as.numeric(timesDF)
+  return(timesDF[1])
+}
+
+findTimesForFilterHigh <- function(id) {
+  timesDF <- data.frame(connectionA$find(paste0("{ \"session.$id\": \"", id, "\"}")))
+  timesDF <- sort(timesDF$time)
+  timesDF <- substr(timesDF, 15, 19)
+  timesDF <- gsub(":", "", timesDF)
+  timesDF <- as.numeric(timesDF)
+  return(tail(timesDF, n = 1))
+}
+

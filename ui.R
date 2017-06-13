@@ -41,8 +41,8 @@ filters <- column(
     sliderInput(
       "playSession",
       "Play session",
-      min = 0,
-      max = session_time,
+      min = as.numeric(lowestTimeForFilter), 
+      max = as.numeric(highestTimeForFilter), 
       value = 0,
       step = 1,
       animate = animationOptions(interval =

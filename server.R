@@ -11,9 +11,14 @@ function(input, output) {
     
     id <- input$sessions
     
+    timeId <- input$playSession
+    
     session <- findSessionById(id)
     players <- findPlayers(id)
-    positions <- rbind(positions, findPositions(id))
+    positions <- findPositions(id)
+    positionsByTime <- findStepbySessionAndTime(timeId, id)
+    lowestTimeForFilter <- findTimesForFilterLow(id)
+    highestTimeForFilter <- findTimesForFilterHigh(id)
     
     print(positions)
     distance_per_player <- c()
@@ -94,8 +99,8 @@ function(input, output) {
   output$positions <- renderPlotly({
     plot_ly(
       positions,
-      x = positions$x,
-      y = positions$y,
+      x = positionsByTime$position.x,
+      y = positionsByTime$position.y,
       type = "scatter",
       mode = 'markers'
     )
