@@ -46,3 +46,7 @@ findTimesForFilterHigh <- function(id) {
   return(tail(timesDF, n = 1))
 }
 
+#Default values 
+session_time <- 145.653
+lowestTimeForFilter <- 2239
+highestTimeForFilter <- 2250

@@ -26,6 +26,8 @@ function(input, output) {
     num_footsteps_per_player <- c()
     player_name = "Unknown"
     
+    
+    
     for (index in 1:nrow(players)) {
       # Vector of all positions within a session for a particular player.
       positions_for_player <-

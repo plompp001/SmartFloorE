@@ -21,7 +21,8 @@ filters <- column(
     width = NULL,
     status = "warning",
     selectInput("sessions", "Session",
-                choices = sort(findAllSessions()$X.id))
+                choices = sort(findAllSessions()$X.id),
+                selected = TRUE)
   ),
   box(
     width = NULL,
