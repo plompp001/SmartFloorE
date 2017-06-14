@@ -11,7 +11,7 @@ function(input, output) {
     
     id <- input$sessions
     
-    timeId <- input$playSession
+    timeId <- input$playSession #format: "2017-06-01T01:21:48.415Z"
     
     session <- findSessionById(id)
     players <- findPlayers(id)

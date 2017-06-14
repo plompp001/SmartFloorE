@@ -47,6 +47,10 @@ findTimesForFilterHigh <- function(id) {
 }
 
 #Default values 
+id <- '01'
+timeId <- "2017-06-01T01:21:48.415Z"
 session_time <- 145.653
 lowestTimeForFilter <- 2239
 highestTimeForFilter <- 2250
+positions <- findPositions(id)
+positionsByTime <- findStepbySessionAndTime(timeId, id)
