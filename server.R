@@ -3,6 +3,8 @@ library(jsonlite)
 library(mongolite)
 library(dplyr)
 
+options(error=recover)
+
 function(input, output) {
   
   data <- reactive({
@@ -52,59 +54,65 @@ function(input, output) {
     player_data <- data.frame(players$X.id, num_footsteps_per_player, distance_per_player, average_speed_per_player)
     
     # Creation of a matrix for a floor, this is used to show a heatmap(or any sort of graph which utilizes the z-axis).
-    # floor <- matrix(0, max(positions$x), max(positions$y))
+    floor <- matrix(0, max(positions$x), max(positions$y))
     # 
     # # For each step taken on a floor, the z value will be increased for a particular position to create a matrix.
-    # for(index in 1:nrow(positions)) {
+     #for(index in 1:nrow(positions)) {
     #   floor[positions[index, 1], positions[index, 2]] <- floor[floor(positions[index, 1]), round(positions[index, 2])] + 1
     # }
     
-    player_data
+    data <- list("player_data"=player_data,"positions"=positions)
+    
+    data
+    
+    
   })
   
   output$amountOfFootsteps <- renderPlotly({
-    player_data <- data()
+    data <- data()
     plot_ly(
-      player_data,
-      x = player_data$players.X.id,
-      y = player_data$num_footsteps_per_player,
+      data$player_data,
+      x = data$player_data$players.X.id,
+      y = data$player_data$num_footsteps_per_player,
       type = "bar",
-      color = ~ player_data$players.X.id
+      color = ~ data$player_data$players.X.id
     )
   })
   
   output$averageSpeed <- renderPlotly({
-    player_data <- data()
-    plot_ly(player_data,
-            x = player_data$players.X.id,
-            y = player_data$average_speed_per_player,
+    data <- data()
+    plot_ly(data$player_data,
+            x = data$player_data$players.X.id,
+            y = data$player_data$average_speed_per_player,
             type = "bar",
-            color = ~ player_data$players.X.id)
+            color = ~ data$player_data$players.X.id)
   })
   
   output$totalDistance <- renderPlotly({
-    player_data <- data()
+    data <- data()
     plot_ly(player_data,
-            x = player_data$players.X.id,
-            y = player_data$distance_per_player,
+            x = data$player_data$players.X.id,
+            y = data$player_data$distance_per_player,
             type = "bar",
-            color = ~ player_data$players.X.id)
+            color = ~ data$player_data$players.X.id)
   })
   
   output$positions <- renderPlotly({
+    data <- data()
     plot_ly(
-      positions,
-      x = positions$x,
-      y = positions$y,
+      data$positions,
+      x = data$positions$x,
+      y = data$positions$y,
       type = "scatter",
       mode = 'markers'
     )
   })
   
   output$heatmap <- renderPlotly({
+    data <- data()
     plot_ly(
-      x = max(positions$x) - 1.5,
-      y = max(positions$y) - 1.5,
+      x = max(data$positions$x),
+      y = max(data$positions$y),
       z = floor,
       type = "heatmap"
     )
