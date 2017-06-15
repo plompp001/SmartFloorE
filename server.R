@@ -3,8 +3,6 @@ library(jsonlite)
 library(mongolite)
 library(dplyr)
 
-options(error=recover)
-
 function(input, output) {
   
   data <- reactive({
@@ -53,20 +51,32 @@ function(input, output) {
     # A data frame containing all relevant data per player(i.e. average speed, distance).
     player_data <- data.frame(players$X.id, num_footsteps_per_player, distance_per_player, average_speed_per_player)
     
-    # Creation of a matrix for a floor, this is used to show a heatmap(or any sort of graph which utilizes the z-axis).
-    floor <- matrix(0, max(positions$x), max(positions$y))
-    # 
-    # # For each step taken on a floor, the z value will be increased for a particular position to create a matrix.
-     #for(index in 1:nrow(positions)) {
-    #   floor[positions[index, 1], positions[index, 2]] <- floor[floor(positions[index, 1]), round(positions[index, 2])] + 1
-    # }
+    min_x = (round(min(positions$x)) - 1)*-1
+    min_y = (round(min(positions$y)) - 1)*-1
     
-    data <- list("player_data"=player_data,"positions"=positions)
+    max_x = round(max(positions$x)) + 1
+    max_y = round(max(positions$y)) + 1
+    
+    # Creation of a matrix for a floor, this is used to show a heatmap(or any sort of graph which utilizes the z-axis).
+    floor <- matrix(0, (max_y+min_y), (max_x+min_x))
+
+    aantal = nrow(positions)
+    
+    for (index in 1:nrow(positions)) {
+      x = round(positions$x[index])+min_x
+      y = round(positions$y[index])+min_y
+      if(!is.null(x) && !is.null(y) && x > 0 && y > 0){
+         floor[positions[index, 1], positions[index, 2]] <- floor[floor(positions[index, 1]), round(positions[index, 2])] + 1
+      }
+    }
+    
+    data <- list("player_data"=player_data,"positions"=positions,"floor"=floor)
     
     data
     
     
   })
+  
   
   output$amountOfFootsteps <- renderPlotly({
     data <- data()
@@ -113,13 +123,14 @@ function(input, output) {
     plot_ly(
       x = max(data$positions$x),
       y = max(data$positions$y),
-      z = floor,
+      z = data$floor,
       type = "heatmap"
     )
   })
   
   output$perspective <- renderPlot({
-    persp(floor, expand = 0.2)
+    data <- data()
+    persp(data$floor, expand = 0.2)
   })
   
   output$table <- renderDataTable({

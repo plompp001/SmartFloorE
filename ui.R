@@ -30,8 +30,8 @@ filters <- column(
       "sessionTime",
       "Session flags",
       min = 0,
-      max = session_time,
-      value = c(0, session_time)
+      max = as.numeric(session_time),
+      value = c(0, as.numeric(session_time))
     ),
     p(class = "text-muted",
       paste("Note: time is in seconds")),
@@ -42,7 +42,7 @@ filters <- column(
       "playSession",
       "Play session",
       min = 0,
-      max = session_time,
+      max = as.numeric(session_time),
       value = 0,
       step = 1,
       animate = animationOptions(interval =
