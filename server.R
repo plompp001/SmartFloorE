@@ -10,12 +10,19 @@ function(input, output) {
     distance_between_positions = 0.1
     
     id <- input$sessions
-    
+
     session <- findSessionById(id)
     players <- findPlayers(id)
     positions <- findPositions(id)
     
-    print(positions)
+    
+    varRangeGet <- range(input$sessionTime)
+    start_point = varRangeGet[[1]]
+    end_point = varRangeGet[[2]]
+    
+    positions = positions[positions[, "time"]>start_point, ]
+    positions = positions[positions[, "time"]<end_point, ]
+    
     distance_per_player <- c()
     average_speed_per_player <- c()
     num_footsteps_per_player <- c()
@@ -38,6 +45,7 @@ function(input, output) {
       
       # Total session time for a player.
       session_time = (session$time[nrow(session)] - session$time[1]) / 1000
+      session_time_in_seconds = as.integer(as.POSIXct((max(session$time)))) - as.integer(as.POSIXct((min(session$time))))
 
       # Average speed in kilometers per hour for a particular player *as.Double() NOT SURE*.
       speed_in_kph = (distance_in_meters / as.double(session_time)) * 3.6
@@ -53,10 +61,9 @@ function(input, output) {
     
     min_x = (round(min(positions$x)) - 1)*-1
     min_y = (round(min(positions$y)) - 1)*-1
-    
     max_x = round(max(positions$x)) + 1
     max_y = round(max(positions$y)) + 1
-    
+
     # Creation of a matrix for a floor, this is used to show a heatmap(or any sort of graph which utilizes the z-axis).
     floor <- matrix(0, (max_y+min_y), (max_x+min_x))
 
@@ -73,7 +80,6 @@ function(input, output) {
     data <- list("player_data"=player_data,"positions"=positions,"floor"=floor)
     
     data
-    
     
   })
   

@@ -30,23 +30,21 @@ filters <- column(
       "sessionTime",
       "Session flags",
       min = 0,
-      max = as.numeric(session_time),
-      value = c(0, as.numeric(session_time))
+      max = session_time_in_seconds,
+      value = c(0, session_time_in_seconds)
     ),
     p(class = "text-muted",
       paste("Note: time is in seconds")),
-    actionButton("setSessionTime", "Set time"),
     br(),
     br(),
     sliderInput(
       "playSession",
       "Play session",
       min = 0,
-      max = as.numeric(session_time),
+      max = session_time_in_seconds,
       value = 0,
       step = 1,
-      animate = animationOptions(interval =
-                                   session_time, loop = TRUE)
+      animate = animationOptions(interval = session_time_in_seconds, loop = TRUE)
     )
   )
 )
