@@ -92,9 +92,14 @@ function(input, output) {
       y = data$player_data$num_footsteps_per_player,
       type = "bar",
       color = ~ data$player_data$players.X.id
-    )
+      
+    ) %>%
+      layout(title = 'Foodsteps per Player',
+             xaxis = list(title = 'Player',
+                          zeroline = TRUE),
+             yaxis = list(title = 'Total steps'))
   })
-  
+ 
   output$averageSpeed <- renderPlotly({
     data <- data()
     plot_ly(data$player_data,
@@ -102,8 +107,14 @@ function(input, output) {
             y = data$player_data$average_speed_per_player,
             type = "bar",
             color = ~ data$player_data$players.X.id)
-  })
-  
+     
+    
+  } %>%
+    layout(title = 'Average speed',
+           xaxis = list(title = 'Player',
+                        zeroline = TRUE),
+           yaxis = list(title = 'Average speed')))
+    
   output$totalDistance <- renderPlotly({
     data <- data()
     plot_ly(player_data,
@@ -111,7 +122,11 @@ function(input, output) {
             y = data$player_data$distance_per_player,
             type = "bar",
             color = ~ data$player_data$players.X.id)
-  })
+  }%>%
+    layout(title = 'Total distance',
+           xaxis = list(title = 'Player',
+                        zeroline = TRUE),
+           yaxis = list(title = 'Distance')))
   
   output$positions <- renderPlotly({
     data <- data()
@@ -122,7 +137,9 @@ function(input, output) {
       type = "scatter",
       mode = 'markers'
     )
-  })
+  }
+  %>%
+    layout(title = 'Positions'))
   
   output$heatmap <- renderPlotly({
     data <- data()
@@ -132,7 +149,10 @@ function(input, output) {
       z = data$floor,
       type = "heatmap"
     )
-  })
+  }
+  %>%
+    layout(title = 'Positions', xaxis = list(title = 'Meter'),
+           yaxis = list(title = 'Meter')))
   
   output$perspective <- renderPlot({
     data <- data()
