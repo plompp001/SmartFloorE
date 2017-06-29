@@ -12,39 +12,28 @@ sidebar <- dashboardSidebar(sidebarMenu(
   menuItem("Speed", tabName = "tabSpeed"),
   menuItem("Positions", tabName = "tabPositions"),
   menuItem("Heatmap", tabName = "tabHeatmap"),
-  menuItem("Perspective", tabName = "tabPerspective")
-))
+  menuItem("Table", tabName = "tabTable")
+)) 
 
 filters <- column(
   width = 3,
   box(
     width = NULL,
-    status = "warning",
+    status = "success",
     selectInput("sessions", "Session",
                 choices = sort(findAllSessions()$X.id))
   ),
   box(
     width = NULL,
-    status = "warning",
-    sliderInput(
-      "sessionTime",
-      "Session flags",
-      min = 0,
-      max = session_time_in_seconds,
-      value = c(0, session_time_in_seconds)
-    ),
-    p(class = "text-muted",
-      paste("Note: time is in seconds")),
-    br(),
-    br(),
+    status = "success",
     sliderInput(
       "playSession",
-      "Play session",
+      "Replay session (time in seconds)",
       min = 0,
       max = session_time_in_seconds,
       value = 0,
       step = 1,
-      animate = animationOptions(interval = session_time_in_seconds, loop = TRUE)
+      animate = animationOptions(interval = 1000 , loop = FALSE)
     )
   )
 )
@@ -97,18 +86,19 @@ body <- dashboardBody(fluidRow(column(
                 plotlyOutput("heatmap")
               )
             ))),
-    tabItem(tabName = "tabPerspective",
+    tabItem(tabName = "tabTable",
             fluidRow(column(
               width = 12,
               box(
                 width = NULL,
                 solidHeader = TRUE,
-                plotOutput("perspective")
+                dataTableOutput("table")
               )
             )))
   )
 ), filters))
 
-dashboardPage(header,
+dashboardPage(skin = "green",
+              header,
               sidebar,
               body)

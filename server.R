@@ -3,6 +3,8 @@ library(jsonlite)
 library(mongolite)
 library(dplyr)
 
+source("repository.R")
+
 function(input, output) {
   
   data <- reactive({
@@ -15,13 +17,8 @@ function(input, output) {
     players <- findPlayers(id)
     positions <- findPositions(id)
     
-    
-    varRangeGet <- range(input$sessionTime)
-    start_point = varRangeGet[[1]]
-    end_point = varRangeGet[[2]]
-    
-    positions = positions[positions[, "time"]>start_point, ]
-    positions = positions[positions[, "time"]<end_point, ]
+    positions = positions[positions[, "time"]>0, ]
+    positions = positions[positions[, "time"]<input$playSession + 9, ]
     
     distance_per_player <- c()
     average_speed_per_player <- c()
@@ -44,11 +41,10 @@ function(input, output) {
       distance_in_meters = distance_between_positions * sum(distances)
       
       # Total session time for a player.
-      session_time = (session$time[nrow(session)] - session$time[1]) / 1000
       session_time_in_seconds = as.integer(as.POSIXct((max(session$time)))) - as.integer(as.POSIXct((min(session$time))))
 
       # Average speed in kilometers per hour for a particular player *as.Double() NOT SURE*.
-      speed_in_kph = (distance_in_meters / as.double(session_time)) * 3.6
+      speed_in_kph = (abs(distance_in_meters) / as.double(session_time_in_seconds)) * 3.6
       
       # Concatenating calculated values to the vectors, which are declared above.
       distance_per_player <- c(distance_per_player, distance_in_meters)
@@ -79,10 +75,8 @@ function(input, output) {
     
     data <- list("player_data"=player_data,"positions"=positions,"floor"=floor)
     
-    data
-    
+    na.omit(data)
   })
-  
   
   output$amountOfFootsteps <- renderPlotly({
     data <- data()
@@ -94,10 +88,10 @@ function(input, output) {
       color = ~ data$player_data$players.X.id
       
     ) %>%
-      layout(title = 'Foodsteps per Player',
+      layout(title = 'Footsteps per Player',
              xaxis = list(title = 'Player',
                           zeroline = TRUE),
-             yaxis = list(title = 'Total steps'))
+             yaxis = list(title = 'Total steps', list(type = "category")))
   })
  
   output$averageSpeed <- renderPlotly({
@@ -107,26 +101,25 @@ function(input, output) {
             y = data$player_data$average_speed_per_player,
             type = "bar",
             color = ~ data$player_data$players.X.id)
-     
     
   } %>%
     layout(title = 'Average speed',
            xaxis = list(title = 'Player',
                         zeroline = TRUE),
-           yaxis = list(title = 'Average speed')))
+           yaxis = list(title = 'Average speed (in kilometers per hour)')))
     
   output$totalDistance <- renderPlotly({
     data <- data()
-    plot_ly(player_data,
+    plot_ly(data$player_data,
             x = data$player_data$players.X.id,
             y = data$player_data$distance_per_player,
             type = "bar",
             color = ~ data$player_data$players.X.id)
   }%>%
-    layout(title = 'Total distance',
+    layout(title = 'Total distance per player',
            xaxis = list(title = 'Player',
                         zeroline = TRUE),
-           yaxis = list(title = 'Distance')))
+           yaxis = list(title = 'Distance (in meters)')))
   
   output$positions <- renderPlotly({
     data <- data()
@@ -135,7 +128,8 @@ function(input, output) {
       x = data$positions$x,
       y = data$positions$y,
       type = "scatter",
-      mode = 'markers'
+      mode = 'markers+lines',
+      color = ~ data$positions$X.id
     )
   }
   %>%
@@ -151,16 +145,11 @@ function(input, output) {
     )
   }
   %>%
-    layout(title = 'Positions', xaxis = list(title = 'Meter'),
-           yaxis = list(title = 'Meter')))
-  
-  output$perspective <- renderPlot({
-    data <- data()
-    persp(data$floor, expand = 0.2)
-  })
+    layout(title = 'Heatmap', xaxis = list(title = 'X-Axis'),
+           yaxis = list(title = 'Y-Axis')))
   
   output$table <- renderDataTable({
-    player_data
+    data()$player_data
   })
   
 }
