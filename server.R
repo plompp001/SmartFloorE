@@ -5,10 +5,17 @@ library(dplyr)
 
 source("repository.R")
 
+# Server.R
+#
+# Script for processing data and binding it to the UI.
+
 function(input, output) {
   
+  # A reactive expression that uses input from the filters and returns a list of values. 
+  # The reactive expression will update these values whenever a widget changes.
   data <- reactive({
-    # Distance between positions in meters, distance between two positions equals 10cm.
+    
+    # Distance between positions in meters, distance between two positions on the actual floor equals 10cm.
     distance_between_positions = 0.1
     
     id <- input$sessions
@@ -20,9 +27,11 @@ function(input, output) {
     positions = positions[positions[, "time"]>0, ]
     positions = positions[positions[, "time"]<input$playSession + 9, ]
     
+    # Initialisation of vectors.
     distance_per_player <- c()
     average_speed_per_player <- c()
     num_footsteps_per_player <- c()
+
     player_name = "Unknown"
     
     for (index in 1:nrow(players)) {
